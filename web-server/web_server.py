@@ -1,11 +1,13 @@
 import RPi.GPIO as GPIO
 from flask import Flask
+from views import views
 
 BUTTON_PIN = 26
 LED_PINS = [17, 27, 22]
 
 # initializes flask application
 app = Flask(__name__)
+app.register_blueprint(views, url_prefix="/")
 
 # initializes GPIO
 GPIO.setmode(GPIO.BCM)
@@ -18,7 +20,7 @@ for x in LED_PINS:
 # create some routes 
 @app.route("/")
 def index():
-    return "Hello from flask"
+    return "Welcome to the raspberry pi webserver!"
 
 @app.route("/push-button")
 def check_push_button_state():
@@ -42,4 +44,3 @@ def change_led_state(led_pin, led_state):
 
 # runs application until stop singal 
 app.run(host="0.0.0.0", port=8500)
-
