@@ -1,39 +1,45 @@
 import RPi.GPIO as GPIO
 import time 
 
+LED_PIN_LIST = [17, 27, 22]
 BUTTON_PIN = 26
-RED_LED_PIN = 17
-BLUE_LED_PIN = 27
-GREEN_LED_PIN = 22
+
+def power_on_led(pin_num):
+    GPIO.output(pin_num, GPIO.HIGH)
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN)
-GPIO.setup(RED_LED_PIN, GPIO.OUT)
-GPIO.setup(BLUE_LED_PIN, GPIO.OUT)
-GPIO.setup(GREEN_LED_PIN, GPIO.OUT)
 
-GPIO.output(RED_LED_PIN, GPIO.LOW)
-GPIO.output(BLUE_LED_PIN, GPIO.LOW)
-GPIO.output(GREEN_LED_PIN, GPIO.LOW)
+for PIN in LED_PIN_LIST:
+    GPIO.setup(PIN, GPIO.OUT)
+
+GPIO.setup(BUTTON_PIN, GPIO.IN)
+
+for PIN in LED_PIN_LIST:
+    GPIO.output(PIN, GPIO.LOW)
 
 previous_button_state = GPIO.input(BUTTON_PIN);
 counter = 0
 while True:
     time.sleep(.01)
-    if previous_button_state != GPIO.input(BUTTON_PIN):
-        if counter == 0:
-            GPIO.output(RED_LED_PIN, GPIO.HIGH)
-            previous_button_state = GPIO.input(BUTTON_PIN);
-            counter++
-        elif counter == 1:
-            GPIO.output(BLUE_LED_PIN, GPIO.HIGH)
-            previous_button_state = GPIO.input(BUTTON_PIN);
-            counter++
-        else: 
-            GPIO.output(GREEN_LED_PIN, GPIO.HIGH)
-            previous_button_state = GPIO.input(BUTTON_PIN);
-            counter = 0
-
+    button_state = GPIO.input(BUTTON_PIN)
+    if previous_button_state != button_state:
+        previous_button_state = button_state
+        if button_state == GPIO.HIGH:
+            if counter == 0:
+                power_on_led(LED_PIN_LIST[counter])
+                counter+=1
+            elif counter == 1:
+                power_on_led(LED_PIN_LIST[counter])
+                previous_button_state = GPIO.input(BUTTON_PIN);
+                counter+=1
+            elif counter == 2: 
+                power_on_led(LED_PIN_LIST[counter])
+                previous_button_state = GPIO.input(BUTTON_PIN);
+                counter += 1
+            else:
+                for PIN in LED_PIN_LIST:
+                    GPIO.output(PIN, GPIO.LOW)
+                counter = 0
 GPIO.cleanup()
 exit()
 
