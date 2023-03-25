@@ -4,6 +4,8 @@ import pycurl
 import certifi
 from io import BytesIO
 
+# these connect to an LED matrix
+
 def chuck_norris():
     url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
 
